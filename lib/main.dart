@@ -37,28 +37,31 @@ class LifeGrid extends StatelessWidget {
     final midpointX = (lifeXCount / 2).ceil();
     final midpointY = (lifeYCount / 2).ceil();
 
-    final Widget alive = DecoratedBox(
-        decoration: BoxDecoration(
-            color: Color.fromARGB(255, 51, 255, 51),
-            border: Border.all(color: Colors.black, width: 0.1)));
-    final Widget dead = DecoratedBox(
-        decoration: BoxDecoration(
-            color: Color.fromARGB(250, 40, 40, 40),
-            border: Border.all(color: Colors.black, width: 0.1)));
+    final Widget alive = SizedBox(
+      width: cellSize.toDouble(),
+      height: cellSize.toDouble(),
+      child: ColoredBox(color: Color.fromARGB(255, 51, 255, 51)),
+    );
+    final Widget dead = SizedBox(
+      width: cellSize.toDouble(),
+      height: cellSize.toDouble(),
+      child: ColoredBox(color: Color.fromARGB(250, 40, 40, 40)),
+    );
 
-    return GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: lifeXCount,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          Position indexCellPosition =
-              Position((index % lifeXCount), (index / lifeXCount).floor());
-          Position logicalPosition =
-              gridToLogicalPosition(indexCellPosition, midpointX, midpointY);
-          return this.generation.living.contains(logicalPosition)
-              ? alive
-              : dead;
-        });
+    return Table(
+        border: TableBorder.all(color: Colors.black, width: 0.1),
+        defaultColumnWidth: FixedColumnWidth(10),
+        children: List.generate(
+            lifeYCount,
+            (row) => TableRow(
+                    children: List.generate(lifeXCount, (col) {
+                  Position indexCellPosition = Position(col, row);
+                  Position logicalPosition = gridToLogicalPosition(
+                      indexCellPosition, midpointX, midpointY);
+                  return this.generation.living.contains(logicalPosition)
+                      ? TableCell(child: alive)
+                      : TableCell(child: dead);
+                }).toList())).toList());
   }
 
   Position gridToLogicalPosition(
